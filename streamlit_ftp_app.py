@@ -101,33 +101,35 @@ def create_financial_pdf(quarter, revenue, expenses):
     c = canvas.Canvas(buffer, pagesize=letter)
     width, height = letter
     
-    # Header
+    # Header with ISG branding
     c.setFont("Helvetica-Bold", 24)
-    c.drawString(50, height - 50, "SecureCorp Financial Report")
-    c.setFont("Helvetica", 16)
-    c.drawString(50, height - 80, f"{quarter}")
+    c.drawString(50, height - 50, "ISG Cybersecurity")
+    c.setFont("Helvetica", 14)
+    c.drawString(50, height - 75, "There's No Challenge Too Big")
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(50, height - 110, f"Security Services Report - {quarter}")
     
     # Line
-    c.line(50, height - 100, width - 50, height - 100)
+    c.line(50, height - 130, width - 50, height - 130)
     
     # Financial Summary
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(50, height - 130, "Executive Summary")
+    c.drawString(50, height - 160, "Executive Summary")
     c.setFont("Helvetica", 12)
-    c.drawString(50, height - 160, f"Total Revenue: ${revenue}")
-    c.drawString(50, height - 180, f"Total Expenses: ${expenses}")
-    c.drawString(50, height - 200, f"Net Profit: ${int(revenue.replace('M', '')) - int(expenses.replace('M', ''))}M")
+    c.drawString(50, height - 190, f"Total Revenue: ${revenue}")
+    c.drawString(50, height - 210, f"Total Expenses: ${expenses}")
+    c.drawString(50, height - 230, f"Net Profit: ${int(revenue.replace('M', '')) - int(expenses.replace('M', ''))}M")
     
     # Details
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(50, height - 250, "Revenue Breakdown")
+    c.drawString(50, height - 280, "Revenue Breakdown")
     c.setFont("Helvetica", 11)
-    y_pos = height - 280
+    y_pos = height - 310
     categories = [
-        ("Software Licenses", "45%"),
-        ("Support Services", "30%"),
-        ("Consulting", "20%"),
-        ("Training", "5%")
+        ("Security Assessments", "40%"),
+        ("Incident Response", "25%"),
+        ("Compliance Audits", "20%"),
+        ("Security Training", "15%")
     ]
     for category, percentage in categories:
         c.drawString(70, y_pos, f"• {category}: {percentage}")
@@ -135,7 +137,7 @@ def create_financial_pdf(quarter, revenue, expenses):
     
     # Footer
     c.setFont("Helvetica", 10)
-    c.drawString(50, 50, "Confidential - SecureCorp Financial Report")
+    c.drawString(50, 50, "Confidential - ISG Cybersecurity")
     c.drawString(width - 150, 50, f"Generated: {datetime.datetime.now().strftime('%Y-%m-%d')}")
     
     c.save()
@@ -147,22 +149,26 @@ def create_employee_doc():
     doc = Document()
     
     # Title
-    title = doc.add_heading('SecureCorp Employee Handbook', 0)
+    title = doc.add_heading('ISG Cybersecurity Employee Handbook', 0)
     title.alignment = WD_ALIGN_PARAGRAPH.CENTER
     
+    # Tagline
+    tagline = doc.add_paragraph("There's No Challenge Too Big")
+    tagline.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
     # Add company info
-    doc.add_heading('Welcome to SecureCorp', level=1)
+    doc.add_heading('Welcome to ISG Cybersecurity', level=1)
     doc.add_paragraph(
-        'SecureCorp is a leading technology company specializing in '
-        'enterprise software solutions. Founded in 2010, we have grown '
-        'to over 500 employees worldwide.'
+        'ISG Cybersecurity is a leading cybersecurity firm specializing in '
+        'protecting organizations from digital threats. We guide our clients '
+        'through the mountain of cyber challenges with expertise and dedication.'
     )
     
     # Mission Statement
     doc.add_heading('Our Mission', level=2)
     doc.add_paragraph(
-        'To provide innovative, secure, and reliable software solutions '
-        'that empower businesses to achieve their full potential.'
+        'To guide organizations safely through the evolving landscape of cyber threats, '
+        'providing expert protection and ensuring that no cybersecurity challenge is too big to overcome.'
     )
     
     # Company Policies
@@ -196,17 +202,17 @@ def create_employee_doc():
 
 def create_database_backup():
     """Create SQL backup file"""
-    sql_content = """-- SecureCorp Database Backup
+    sql_content = """-- ISG Cybersecurity Database Backup
 -- Generated: 2023-12-01 03:00:00
--- Database: securecorp_prod
+-- Database: isg_cyber_prod
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
--- Database: `securecorp_prod`
-CREATE DATABASE IF NOT EXISTS `securecorp_prod` DEFAULT CHARACTER SET utf8mb4;
-USE `securecorp_prod`;
+-- Database: `isg_cyber_prod`
+CREATE DATABASE IF NOT EXISTS `isg_cyber_prod` DEFAULT CHARACTER SET utf8mb4;
+USE `isg_cyber_prod`;
 
 -- Table structure for table `employees`
 DROP TABLE IF EXISTS `employees`;
@@ -225,11 +231,11 @@ CREATE TABLE `employees` (
 
 -- Sample data for `employees`
 INSERT INTO `employees` VALUES
-(1,'EMP001','John','Doe','john.doe@securecorp.com','Engineering','2020-01-15',95000.00),
-(2,'EMP002','Jane','Smith','jane.smith@securecorp.com','Marketing','2019-03-22',85000.00),
-(3,'EMP003','Michael','Johnson','michael.j@securecorp.com','Sales','2021-06-10',78000.00),
-(4,'EMP004','Sarah','Williams','sarah.w@securecorp.com','HR','2018-11-05',72000.00),
-(5,'EMP005','Robert','Brown','robert.b@securecorp.com','Engineering','2022-02-28',102000.00);
+(1,'EMP001','John','Doe','john.doe@isgcyber.com','Security Analysis','2020-01-15',95000.00),
+(2,'EMP002','Jane','Smith','jane.smith@isgcyber.com','Incident Response','2019-03-22',85000.00),
+(3,'EMP003','Michael','Johnson','michael.j@isgcyber.com','Compliance','2021-06-10',78000.00),
+(4,'EMP004','Sarah','Williams','sarah.w@isgcyber.com','HR','2018-11-05',72000.00),
+(5,'EMP005','Robert','Brown','robert.b@isgcyber.com','Penetration Testing','2022-02-28',102000.00);
 
 -- Table structure for table `customers`
 DROP TABLE IF EXISTS `customers`;
@@ -258,10 +264,34 @@ def login_page():
         margin: 20px auto;
         max-width: 400px;
     }
+    .isg-header {
+        background-color: #1e467e;
+        color: white;
+        padding: 20px;
+        text-align: center;
+        margin: -10px -10px 20px -10px;
+    }
+    .isg-title {
+        font-size: 36px;
+        font-weight: bold;
+        margin: 0;
+    }
+    .isg-tagline {
+        font-size: 16px;
+        font-style: italic;
+        margin-top: 5px;
+    }
     </style>
     """, unsafe_allow_html=True)
     
-    st.title("SecureCorp FTP Server")
+    st.markdown("""
+    <div class="isg-header">
+        <div class="isg-title">ISG Cybersecurity</div>
+        <div class="isg-tagline">There's No Challenge Too Big</div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.title("🏔️ FTP Server Portal")
     st.markdown("---")
     
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -286,11 +316,11 @@ def login_page():
                     st.error("Invalid username or password")
         
         st.markdown("---")
-        st.caption("FTP Server v2.1.3 | Port: 21 | Protocol: FTP/FTPS")
+        st.caption("ISG Cybersecurity FTP Server v2.1.3 | Port: 21 | Protocol: FTP/FTPS")
 
 def file_browser():
     """Display file browser interface with traditional FTP listing"""
-    # Custom CSS for FTP-like interface
+    # Custom CSS for FTP-like interface with ISG branding
     st.markdown("""
     <style>
     .ftp-listing {
@@ -303,26 +333,41 @@ def file_browser():
     }
     .ftp-header {
         color: #ffffff;
-        background-color: #333;
+        background-color: #1e467e;
         padding: 5px 10px;
         margin-bottom: 10px;
         border-radius: 3px;
     }
     .stButton > button {
         background-color: transparent;
-        color: #0084ff;
+        color: #1e467e;
         border: none;
         padding: 0;
         text-decoration: underline;
         font-family: monospace;
     }
+    .isg-banner {
+        background-color: #1e467e;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
     </style>
+    """, unsafe_allow_html=True)
+    
+    # ISG Banner
+    st.markdown("""
+    <div class="isg-banner">
+        <strong>ISG Cybersecurity</strong> | Secure FTP Portal | There's No Challenge Too Big
+    </div>
     """, unsafe_allow_html=True)
     
     # Header
     col1, col2 = st.columns([6, 1])
     with col1:
-        st.markdown(f"### 📁 FTP File Browser - Connected as: **{st.session_state.username}**")
+        st.markdown(f"### 🏔️ FTP File Browser - Connected as: **{st.session_state.username}**")
     with col2:
         if st.button("Logout", type="secondary"):
             st.session_state.logged_in = False
@@ -411,24 +456,26 @@ def file_browser():
     
     # Server info
     st.markdown("---")
-    st.caption(f"Server: ftp.securecorp.com | Connected: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Transfer Mode: Binary")
+    st.caption(f"ISG Cybersecurity FTP Server | ftp.isgcyber.com | Connected: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Transfer Mode: Binary")
 
 def generate_file_content(filename):
     """Generate appropriate content based on filename"""
     if filename == "readme.txt":
-        return b"""SecureCorp FTP Server
-=====================
+        return b"""ISG Cybersecurity FTP Server
+=============================
+There's No Challenge Too Big
 
-Welcome to the SecureCorp FTP server. This server contains company documents,
-reports, and resources for authorized personnel only.
+Welcome to the ISG Cybersecurity FTP server. This server contains security
+assessments, reports, and resources for authorized personnel only.
 
 Directory Structure:
-- /public    : Public company information and resources
-- /private   : Confidential documents (restricted access)
-- /reports   : Financial and business reports
-- /backups   : System and database backups
+- /public    : Public security advisories and resources
+- /private   : Confidential client assessments (restricted access)
+- /reports   : Security audit reports and compliance documents
+- /backups   : System and security configuration backups
 
-For support, contact: support@securecorp.com
+For support, contact: support@isgcyber.com
+Website: https://isgcyber.com
 """
     
     elif filename == "passwords.txt":
@@ -499,14 +546,14 @@ def create_employee_excel():
     
     # Employee data
     employees = [
-        ("EMP001", "John Doe", "Engineering", "Senior Developer", "$95,000", "2020-01-15", "john.doe@securecorp.com"),
-        ("EMP002", "Jane Smith", "Marketing", "Marketing Manager", "$85,000", "2019-03-22", "jane.smith@securecorp.com"),
-        ("EMP003", "Michael Johnson", "Sales", "Sales Representative", "$78,000", "2021-06-10", "michael.j@securecorp.com"),
-        ("EMP004", "Sarah Williams", "HR", "HR Specialist", "$72,000", "2018-11-05", "sarah.w@securecorp.com"),
-        ("EMP005", "Robert Brown", "Engineering", "Lead Engineer", "$102,000", "2022-02-28", "robert.b@securecorp.com"),
-        ("EMP006", "Lisa Davis", "Finance", "Financial Analyst", "$80,000", "2020-09-14", "lisa.d@securecorp.com"),
-        ("EMP007", "James Wilson", "IT", "System Administrator", "$88,000", "2019-07-20", "james.w@securecorp.com"),
-        ("EMP008", "Patricia Garcia", "Sales", "Sales Director", "$110,000", "2017-04-03", "patricia.g@securecorp.com"),
+        ("EMP001", "John Doe", "Security Analysis", "Senior Security Analyst", "$95,000", "2020-01-15", "john.doe@isgcyber.com"),
+        ("EMP002", "Jane Smith", "Incident Response", "IR Team Lead", "$85,000", "2019-03-22", "jane.smith@isgcyber.com"),
+        ("EMP003", "Michael Johnson", "Compliance", "Compliance Auditor", "$78,000", "2021-06-10", "michael.j@isgcyber.com"),
+        ("EMP004", "Sarah Williams", "HR", "HR Specialist", "$72,000", "2018-11-05", "sarah.w@isgcyber.com"),
+        ("EMP005", "Robert Brown", "Penetration Testing", "Senior Pentester", "$102,000", "2022-02-28", "robert.b@isgcyber.com"),
+        ("EMP006", "Lisa Davis", "Threat Intelligence", "Threat Analyst", "$80,000", "2020-09-14", "lisa.d@isgcyber.com"),
+        ("EMP007", "James Wilson", "Security Operations", "SOC Manager", "$88,000", "2019-07-20", "james.w@isgcyber.com"),
+        ("EMP008", "Patricia Garcia", "Business Development", "Sales Director", "$110,000", "2017-04-03", "patricia.g@isgcyber.com"),
     ]
     
     for row, employee in enumerate(employees, 2):
@@ -579,8 +626,8 @@ def admin_panel():
 def main():
     """Main application"""
     st.set_page_config(
-        page_title="SecureCorp FTP Server",
-        page_icon="🔒",
+        page_title="ISG Cybersecurity FTP Server",
+        page_icon="🏔️",
         layout="wide"
     )
     
