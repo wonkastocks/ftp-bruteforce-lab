@@ -36,6 +36,8 @@ def init_session_state():
         st.session_state.current_path = "/"
     if 'login_attempts' not in st.session_state:
         st.session_state.login_attempts = []
+    if 'activity_logs' not in st.session_state:
+        st.session_state.activity_logs = []
 
 def log_attempt(username, password, success):
     """Log login attempts"""
@@ -43,9 +45,21 @@ def log_attempt(username, password, success):
         "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "username": username,
         "password": password,
-        "success": success
+        "success": success,
+        "ip_address": "Client IP"  # In real app, would get actual IP
     }
     st.session_state.login_attempts.append(attempt)
+    
+def log_activity(username, action, details=""):
+    """Log user activities"""
+    activity = {
+        "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        "username": username,
+        "action": action,
+        "details": details,
+        "path": st.session_state.current_path
+    }
+    st.session_state.activity_logs.append(activity)
 
 def create_sales_excel():
     """Create Excel file with fake sales data"""
@@ -309,6 +323,7 @@ def login_page():
                     st.session_state.logged_in = True
                     st.session_state.username = username
                     log_attempt(username, password, True)
+                    log_activity(username, "LOGIN", f"Successful login from web interface")
                     st.success("Login successful!")
                     st.rerun()
                 else:
@@ -399,6 +414,9 @@ def file_browser():
             ("drwxr-xr-x", "4096", "Dec 01 08:45", "reports", True),
             ("drwxr-xr-x", "4096", "Dec 01 03:00", "backups", True),
         ]
+        # Add LOG folder only for admin
+        if st.session_state.username == "admin":
+            files.append(("drwx------", "4096", datetime.datetime.now().strftime("%b %d %H:%M"), "LOG", True))
     elif st.session_state.current_path == "/public":
         files = [
             ("-rw-r--r--", "1234", "Nov 10 12:00", "readme.txt", False),
@@ -428,6 +446,16 @@ def file_browser():
             ("-rw-r--r--", "8901234", "Dec 01 03:00", "website_backup.tar.gz", False),
             ("-rw-r--r--", "2345678", "Dec 01 03:00", "config_backup.zip", False),
         ]
+    elif st.session_state.current_path == "/LOG" and st.session_state.username == "admin":
+        # Admin-only LOG folder
+        files = [
+            ("-rw-------", str(len(str(st.session_state.login_attempts))), 
+             datetime.datetime.now().strftime("%b %d %H:%M"), "login_attempts.log", False),
+            ("-rw-------", str(len(str(st.session_state.activity_logs))), 
+             datetime.datetime.now().strftime("%b %d %H:%M"), "user_activity.log", False),
+            ("-rw-------", "2048", datetime.datetime.now().strftime("%b %d %H:%M"), "access_summary.txt", False),
+            ("-rw-------", "4096", datetime.datetime.now().strftime("%b %d %H:%M"), "security_audit.log", False),
+        ]
     else:
         files = []
     
@@ -445,17 +473,19 @@ def file_browser():
             if is_dir:
                 if st.button(f"📁 {name}", key=f"dir_{name}"):
                     st.session_state.current_path = f"/{name}"
+                    log_activity(st.session_state.username, "NAVIGATE", f"Changed directory to {name}")
                     st.rerun()
             else:
                 # Generate file content based on filename
                 file_content = generate_file_content(name)
                 
-                st.download_button(
+                download_button = st.download_button(
                     label=f"📄 {name}",
                     data=file_content,
                     file_name=name,
                     mime=get_mime_type(name),
-                    key=f"download_{name}"
+                    key=f"download_{name}",
+                    on_click=lambda n=name: log_activity(st.session_state.username, "DOWNLOAD", f"Downloaded file: {n}")
                 )
     
     # Server info
@@ -717,9 +747,128 @@ def create_incident_response_doc():
     doc_buffer.seek(0)
     return doc_buffer.getvalue()
 
+def create_login_attempts_log():
+    """Create login attempts log file"""
+    log_content = "ISG Cybersecurity FTP Server - Login Attempts Log\n"
+    log_content += "=" * 60 + "\n"
+    log_content += f"Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+    log_content += "=" * 60 + "\n\n"
+    
+    for attempt in st.session_state.login_attempts:
+        status = "SUCCESS" if attempt['success'] else "FAILED"
+        log_content += f"{attempt['timestamp']} | {status} | Username: {attempt['username']} | Password: {attempt['password']} | IP: {attempt['ip_address']}\n"
+    
+    return log_content.encode()
+
+def create_activity_log():
+    """Create user activity log file"""
+    log_content = "ISG Cybersecurity FTP Server - User Activity Log\n"
+    log_content += "=" * 60 + "\n"
+    log_content += f"Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+    log_content += "=" * 60 + "\n\n"
+    
+    for activity in st.session_state.activity_logs:
+        log_content += f"{activity['timestamp']} | User: {activity['username']} | Action: {activity['action']} | Path: {activity['path']} | Details: {activity['details']}\n"
+    
+    return log_content.encode()
+
+def create_access_summary():
+    """Create access summary report"""
+    summary = "ISG Cybersecurity FTP Server - Access Summary Report\n"
+    summary += "=" * 60 + "\n"
+    summary += f"Report Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+    summary += "=" * 60 + "\n\n"
+    
+    # Login statistics
+    total_attempts = len(st.session_state.login_attempts)
+    successful = len([a for a in st.session_state.login_attempts if a['success']])
+    failed = total_attempts - successful
+    
+    summary += "LOGIN STATISTICS:\n"
+    summary += f"Total Login Attempts: {total_attempts}\n"
+    summary += f"Successful Logins: {successful}\n"
+    summary += f"Failed Attempts: {failed}\n"
+    summary += f"Success Rate: {(successful/total_attempts*100 if total_attempts > 0 else 0):.1f}%\n\n"
+    
+    # User activity statistics
+    summary += "USER ACTIVITY SUMMARY:\n"
+    activity_counts = {}
+    for activity in st.session_state.activity_logs:
+        action = activity['action']
+        activity_counts[action] = activity_counts.get(action, 0) + 1
+    
+    for action, count in activity_counts.items():
+        summary += f"{action}: {count} times\n"
+    
+    # Most active users
+    user_actions = {}
+    for activity in st.session_state.activity_logs:
+        user = activity['username']
+        user_actions[user] = user_actions.get(user, 0) + 1
+    
+    summary += "\nMOST ACTIVE USERS:\n"
+    for user, count in sorted(user_actions.items(), key=lambda x: x[1], reverse=True)[:5]:
+        summary += f"{user}: {count} actions\n"
+    
+    return summary.encode()
+
+def create_security_audit_log():
+    """Create security audit log"""
+    audit = "ISG Cybersecurity FTP Server - Security Audit Log\n"
+    audit += "=" * 60 + "\n"
+    audit += f"Audit Date: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+    audit += "=" * 60 + "\n\n"
+    
+    # Failed login analysis
+    audit += "FAILED LOGIN ANALYSIS:\n"
+    failed_by_user = {}
+    for attempt in st.session_state.login_attempts:
+        if not attempt['success']:
+            user = attempt['username']
+            failed_by_user[user] = failed_by_user.get(user, 0) + 1
+    
+    audit += "Users with failed login attempts:\n"
+    for user, count in sorted(failed_by_user.items(), key=lambda x: x[1], reverse=True):
+        audit += f"  {user}: {count} failed attempts\n"
+    
+    # Suspicious activity
+    audit += "\nSUSPICIOUS ACTIVITY FLAGS:\n"
+    for user, count in failed_by_user.items():
+        if count >= 3:
+            audit += f"⚠️  WARNING: {user} has {count} failed login attempts\n"
+    
+    # File access patterns
+    audit += "\nFILE ACCESS PATTERNS:\n"
+    downloads = [a for a in st.session_state.activity_logs if a['action'] == 'DOWNLOAD']
+    if downloads:
+        audit += f"Total files downloaded: {len(downloads)}\n"
+        for d in downloads[-10:]:  # Last 10 downloads
+            audit += f"  {d['timestamp']} - {d['username']} downloaded {d['details']}\n"
+    
+    # Recommendations
+    audit += "\nSECURITY RECOMMENDATIONS:\n"
+    if any(count >= 5 for count in failed_by_user.values()):
+        audit += "- Implement account lockout after 5 failed attempts\n"
+    total_attempts = len(st.session_state.login_attempts)
+    if total_attempts > 100:
+        audit += "- High volume of login attempts detected - consider rate limiting\n"
+    audit += "- Enable two-factor authentication for all users\n"
+    audit += "- Regularly review and rotate passwords\n"
+    
+    return audit.encode()
+
 def generate_file_content(filename):
     """Generate appropriate content based on filename"""
-    if filename == "readme.txt":
+    # Handle LOG folder files for admin
+    if filename == "login_attempts.log":
+        return create_login_attempts_log()
+    elif filename == "user_activity.log":
+        return create_activity_log()
+    elif filename == "access_summary.txt":
+        return create_access_summary()
+    elif filename == "security_audit.log":
+        return create_security_audit_log()
+    elif filename == "readme.txt":
         return b"""ISG Cybersecurity FTP Server
 =============================
 There's No Challenge Too Big
