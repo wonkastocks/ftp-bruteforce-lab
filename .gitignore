@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+.env
+
+# Streamlit
+.streamlit/
+*.pkl
+*.pickle
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Test files
+test_*.py
+
+# Docker files (not needed for Streamlit deployment)
+Dockerfile
+docker-compose.yml
+entrypoint.sh
+vsftpd.conf
+setup_ftp.sh
+create_users.py
+ftp_server.py
+setup_python_ftp.sh
