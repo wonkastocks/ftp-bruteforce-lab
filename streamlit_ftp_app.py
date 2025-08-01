@@ -404,6 +404,8 @@ def file_browser():
             ("-rw-r--r--", "1234", "Nov 10 12:00", "readme.txt", False),
             ("-rw-r--r--", "45678", "Nov 12 15:30", "company_brochure.pdf", False),
             ("-rw-r--r--", "23456", "Nov 14 09:15", "welcome_packet.docx", False),
+            ("-rw-r--r--", "34567", "Dec 18 14:20", "5_ways_secure_business.pdf", False),
+            ("-rw-r--r--", "28901", "Dec 19 10:15", "cybersecurity_assessment_guide.pdf", False),
         ]
     elif st.session_state.current_path == "/private":
         files = [
@@ -417,6 +419,8 @@ def file_browser():
             ("-rw-r--r--", "167890", "Oct 31 17:00", "Q4_2023_financial.pdf", False),
             ("-rw-r--r--", "234567", "Dec 15 12:00", "annual_report_2023.docx", False),
             ("-rw-r--r--", "345678", "Dec 20 14:30", "sales_analysis_2023.xlsx", False),
+            ("-rw-r--r--", "456789", "Dec 22 11:45", "penetration_test_report.pdf", False),
+            ("-rw-r--r--", "234890", "Dec 23 09:30", "incident_response_summary.docx", False),
         ]
     elif st.session_state.current_path == "/backups":
         files = [
@@ -457,6 +461,261 @@ def file_browser():
     # Server info
     st.markdown("---")
     st.caption(f"ISG Cybersecurity FTP Server | ftp.isgcyber.com | Connected: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Transfer Mode: Binary")
+
+def create_isg_checklist_pdf():
+    """Create ISG's 5 Ways to Secure Your Business checklist"""
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    
+    # Header
+    c.setFont("Helvetica-Bold", 24)
+    c.drawString(50, height - 50, "ISG Cybersecurity")
+    c.setFont("Helvetica", 14)
+    c.drawString(50, height - 75, "There's No Challenge Too Big")
+    
+    # Title
+    c.setFont("Helvetica-Bold", 20)
+    c.drawString(50, height - 120, "5 Simple Ways to Secure Your Business")
+    c.line(50, height - 130, width - 50, height - 130)
+    
+    # Checklist items
+    c.setFont("Helvetica-Bold", 14)
+    y_pos = height - 170
+    
+    checklist = [
+        ("1. Enable Multi-Factor Authentication (MFA)",
+         "Require MFA for all user accounts, especially admin and privileged users."),
+        ("2. Keep Software Updated", 
+         "Install security patches promptly and enable automatic updates where possible."),
+        ("3. Train Employees on Cybersecurity",
+         "Conduct regular security awareness training to recognize phishing and social engineering."),
+        ("4. Implement Strong Password Policies",
+         "Require complex passwords and regular password changes. Use a password manager."),
+        ("5. Regular Backups and Testing",
+         "Backup critical data regularly and test restore procedures quarterly.")
+    ]
+    
+    for title, desc in checklist:
+        c.setFont("Helvetica-Bold", 12)
+        c.drawString(70, y_pos, title)
+        c.setFont("Helvetica", 11)
+        c.drawString(90, y_pos - 20, desc)
+        y_pos -= 60
+    
+    # Footer
+    c.setFont("Helvetica", 10)
+    c.drawString(50, 50, "© ISG Cybersecurity | www.isgcyber.com")
+    
+    c.save()
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def create_assessment_guide_pdf():
+    """Create Cybersecurity Assessment Guide PDF"""
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    
+    # Header
+    c.setFont("Helvetica-Bold", 24)
+    c.drawString(50, height - 50, "ISG Cybersecurity")
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(50, height - 90, "Cybersecurity Assessment Guide")
+    c.line(50, height - 100, width - 50, height - 100)
+    
+    # Content
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(50, height - 130, "Assessment Framework")
+    
+    c.setFont("Helvetica", 11)
+    y_pos = height - 160
+    
+    sections = [
+        "Phase 1: Discovery and Reconnaissance",
+        "• Network topology mapping",
+        "• Asset identification",
+        "• Service enumeration",
+        "",
+        "Phase 2: Vulnerability Analysis",
+        "• Automated scanning",
+        "• Manual verification",
+        "• Risk classification",
+        "",
+        "Phase 3: Exploitation Testing",
+        "• Controlled penetration testing",
+        "• Privilege escalation attempts",
+        "• Lateral movement analysis",
+        "",
+        "Phase 4: Reporting and Remediation",
+        "• Executive summary",
+        "• Technical findings",
+        "• Remediation roadmap"
+    ]
+    
+    for section in sections:
+        c.drawString(70, y_pos, section)
+        y_pos -= 20
+    
+    c.save()
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def create_pentest_report_pdf():
+    """Create Penetration Test Report PDF"""
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    
+    # Header
+    c.setFont("Helvetica-Bold", 24)
+    c.drawString(50, height - 50, "ISG Cybersecurity")
+    c.setFont("Helvetica-Bold", 18)
+    c.drawString(50, height - 90, "Penetration Test Report - Executive Summary")
+    c.line(50, height - 100, width - 50, height - 100)
+    
+    # Client info
+    c.setFont("Helvetica", 12)
+    c.drawString(50, height - 130, "Client: Confidential Corp")
+    c.drawString(50, height - 150, "Test Period: December 1-15, 2023")
+    c.drawString(50, height - 170, "Test Type: External Network Penetration Test")
+    
+    # Findings summary
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(50, height - 210, "Key Findings")
+    
+    c.setFont("Helvetica", 11)
+    y_pos = height - 240
+    
+    findings = [
+        "Critical: 2 findings requiring immediate attention",
+        "High: 5 findings requiring prompt remediation",
+        "Medium: 8 findings requiring scheduled fixes",
+        "Low: 12 informational findings"
+    ]
+    
+    for finding in findings:
+        c.drawString(70, y_pos, f"• {finding}")
+        y_pos -= 20
+    
+    # Risk score
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(50, y_pos - 20, "Overall Risk Score: 7.2/10 (High)")
+    
+    c.save()
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def create_isg_company_brochure_pdf():
+    """Create ISG Cybersecurity Company Brochure"""
+    buffer = BytesIO()
+    c = canvas.Canvas(buffer, pagesize=letter)
+    width, height = letter
+    
+    # Header
+    c.setFont("Helvetica-Bold", 28)
+    c.drawString(50, height - 60, "ISG Cybersecurity")
+    c.setFont("Helvetica-Oblique", 16)
+    c.drawString(50, height - 85, "There's No Challenge Too Big")
+    
+    # Mountain graphic (simple representation)
+    c.setLineWidth(2)
+    c.line(100, height - 120, 150, height - 170)
+    c.line(150, height - 170, 200, height - 120)
+    
+    # Services section
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(50, height - 220, "Our Services")
+    c.line(50, height - 225, 200, height - 225)
+    
+    c.setFont("Helvetica", 12)
+    y_pos = height - 250
+    
+    services = [
+        "• Cybersecurity Assessments - Comprehensive security evaluations",
+        "• Penetration Testing - Real-world attack simulations",
+        "• Incident Response - 24/7 emergency response team",
+        "• Security Operations Center - Continuous monitoring",
+        "• Compliance Audits - SOC2, PCI-DSS, HIPAA",
+        "• Security Training - Employee awareness programs"
+    ]
+    
+    for service in services:
+        c.drawString(70, y_pos, service)
+        y_pos -= 25
+    
+    # Why ISG section
+    c.setFont("Helvetica-Bold", 16)
+    c.drawString(50, y_pos - 30, "Why Choose ISG?")
+    c.line(50, y_pos - 35, 180, y_pos - 35)
+    
+    c.setFont("Helvetica", 12)
+    y_pos = y_pos - 60
+    
+    reasons = [
+        "✓ Experienced team of certified security professionals",
+        "✓ Proven track record protecting Fortune 500 companies",
+        "✓ Cutting-edge tools and methodologies",
+        "✓ Tailored solutions for your unique challenges"
+    ]
+    
+    for reason in reasons:
+        c.drawString(70, y_pos, reason)
+        y_pos -= 20
+    
+    # Footer
+    c.setFont("Helvetica", 10)
+    c.drawString(50, 50, "Contact: info@isgcyber.com | www.isgcyber.com")
+    
+    c.save()
+    buffer.seek(0)
+    return buffer.getvalue()
+
+def create_incident_response_doc():
+    """Create Incident Response Summary Document"""
+    doc = Document()
+    
+    # Title
+    title = doc.add_heading('ISG Cybersecurity', 0)
+    title.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    subtitle = doc.add_heading('Incident Response Summary', 1)
+    subtitle.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    
+    # Incident details
+    doc.add_heading('Incident Overview', 2)
+    doc.add_paragraph('Date: December 23, 2023')
+    doc.add_paragraph('Incident Type: Ransomware Attack (Contained)')
+    doc.add_paragraph('Severity: High')
+    doc.add_paragraph('Status: Resolved')
+    
+    # Timeline
+    doc.add_heading('Response Timeline', 2)
+    timeline = [
+        '08:45 - Initial detection by SOC team',
+        '09:00 - Incident response team activated',
+        '09:30 - Affected systems isolated',
+        '10:15 - Malware identified as BlackCat variant',
+        '11:00 - Containment measures implemented',
+        '14:00 - Systems restored from clean backups',
+        '16:30 - Normal operations resumed'
+    ]
+    
+    for event in timeline:
+        doc.add_paragraph(event, style='List Bullet')
+    
+    # Recommendations
+    doc.add_heading('Post-Incident Recommendations', 2)
+    doc.add_paragraph(
+        'Based on this incident, ISG Cybersecurity recommends implementing '
+        'enhanced endpoint detection and response (EDR) solutions and '
+        'conducting quarterly tabletop exercises.'
+    )
+    
+    doc_buffer = BytesIO()
+    doc.save(doc_buffer)
+    doc_buffer.seek(0)
+    return doc_buffer.getvalue()
 
 def generate_file_content(filename):
     """Generate appropriate content based on filename"""
@@ -509,9 +768,15 @@ IMPORTANT: Change these passwords regularly!
                 return create_financial_pdf("Q4 2023", "3.1M", "2.0M")
             else:
                 return create_financial_pdf("Q2 2023", "2.2M", "1.6M")
+        elif '5_ways_secure_business' in filename:
+            return create_isg_checklist_pdf()
+        elif 'cybersecurity_assessment_guide' in filename:
+            return create_assessment_guide_pdf()
+        elif 'penetration_test_report' in filename:
+            return create_pentest_report_pdf()
         else:
             # Company brochure
-            return create_financial_pdf("Company Overview", "10.2M", "7.1M")
+            return create_isg_company_brochure_pdf()
     
     elif filename.endswith('.xlsx'):
         if 'salary' in filename or 'employee' in filename:
@@ -520,7 +785,10 @@ IMPORTANT: Change these passwords regularly!
             return create_sales_excel()
     
     elif filename.endswith('.docx'):
-        return create_employee_doc()
+        if 'incident_response' in filename:
+            return create_incident_response_doc()
+        else:
+            return create_employee_doc()
     
     elif filename.endswith('.sql'):
         return create_database_backup()
